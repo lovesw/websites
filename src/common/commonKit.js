@@ -4,7 +4,9 @@ import Qs from 'qs'
 export const baseURL = process.env.root
 
 // axios 全局默认设置
-axios.defaults.baseURL = baseURL
+axios.defaults.baseURL = 'http://192.168.0.32:8081'
+// 默认允许携带cookie
+axios.defaults.withCredentials=true
 
 /***
  * 全局的ajax请求方法
@@ -21,7 +23,7 @@ export const ajax = function (method, url, data, success, vm) {
     data: method === 'POST' || method === 'PUT' ? data : null,
     params: data,
     timeout: 20000,
-    withCredentials: false, // `withCredentials` 表示跨域请求时是否需要使用凭证
+    withCredentials: true,
     paramsSerializer: function (params) { //用来序列化请求参数的
       return Qs.stringify(params, {arrayFormat: 'brackets'})
     }
@@ -38,12 +40,11 @@ export const ajax = function (method, url, data, success, vm) {
         vm.$Message.error(res.data.msg ? res.data.msg : '操作失败')
       }
     }
+  }).catch(function (error) {
+    console.log(error)
+    if (error) {
+      vm.$Message.error('请求出错或服务器出错' + error)
+    }
   })
-    .catch(function (error) {
-      console.log(error)
-      if (error) {
-        vm.$Message.error('请求出错或服务器出错' + error)
-      }
-    })
 
 }
